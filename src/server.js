@@ -34,6 +34,7 @@ const allowedOrigins = [
   "http://localhost:5000",
   "https://ovevents.onrender.com",
   "https://ocassion-super-5kzj.vercel.app",
+  "https://oven-web-frontendd.vercel.app",
   "https://ocassion-super.vercel.app",
   "https://oveventz-frontend.vercel.app", // Production frontend
   "https://oveventz-frontend-git-main-developer01-s-projects.vercel.app",
