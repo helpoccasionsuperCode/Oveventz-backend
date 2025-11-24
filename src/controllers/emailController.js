@@ -1,4 +1,5 @@
 const transporter = require("../utils/mailer");
+const User = require("../models/user");
 
 const sendEmail = async (req, res) => {
     const {email, password, businessName, ownerName} = req.body;
@@ -15,6 +16,30 @@ const sendEmail = async (req, res) => {
             success: false,
             message: "Email and password are required",
             error: "Email and password are required"
+        });
+    }
+
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if user exists (should be created via admin panel first)
+    const user = await User.findOne({ email: normalizedEmail });
+    
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User account not found",
+            error: "Please create user account first via admin panel before sending email"
+        });
+    }
+
+    // Update password if provided (for existing user)
+    if (password && password.trim()) {
+        user.password = password.trim(); // Will be hashed by pre-save hook
+        await user.save();
+        console.log('✅ [Email] User password updated:', {
+            email: normalizedEmail,
+            user_id: user._id
         });
     }
 

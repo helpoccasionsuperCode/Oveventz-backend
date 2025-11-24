@@ -496,13 +496,21 @@ const createVendorUser = async (req, res) => {
             is_active: true,
         };
 
-        console.log("Creating user with data:", userData);
+        console.log("📝 [Admin] Creating vendor user with data:", {
+            email: normalizedEmail,
+            vendor_id: vendor._id,
+            businessName: normalizedBusinessName
+        });
 
         const user = new User(userData);
 
         await user.save();
 
-        console.log("User saved successfully:", user.toObject());
+        console.log("✅ [Admin] User saved successfully:", {
+            user_id: user._id,
+            email: user.email,
+            vendor_id: user.vendor_id
+        });
 
         const savedUser = user.toObject();
         delete savedUser.password; // don't send hashed password back
