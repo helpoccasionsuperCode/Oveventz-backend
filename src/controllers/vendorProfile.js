@@ -165,11 +165,11 @@ const updateVendorProfile = async (req, res) => {
 
         // Validate vendor email format if being updated
         if (vendorUpdateData.email) {
-            const emailRegex = /@gmail\.com$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(vendorUpdateData.email)) {
                 return res.status(400).json({
                     success: false,
-                    message: "Email must contain @gmail.com"
+                    message: "Please enter a valid email address"
                 });
             }
             vendorUpdateData.email = vendorUpdateData.email.toLowerCase().trim();

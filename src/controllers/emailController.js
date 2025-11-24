@@ -396,7 +396,7 @@ const sendEmail = async (req, res) => {
                     </div>
                     
                     <!-- Call to Action -->
-                    <div class="cta-container">
+                              <div class="cta-container">
                       <a href="https://oveventz.com/vendor-auth" class="cta-button" target="_blank">
                         🚀 Access Your Dashboard
                       </a>

@@ -26,8 +26,8 @@ const VendorRegister = new mongoose.Schema({
         required: [true, 'Email is required'],
         unique: true,
         match: [
-            /@gmail\.com$/,
-            'Email must contain @gmail.com'
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            'Please enter a valid email address'
         ],
         lowercase: true,
         trim: true
