@@ -350,7 +350,7 @@ const sendEmail = async (req, res) => {
                     </div>
                     
                     <div class="message">
-                      Thank you for contacting <strong>oveventz.com</strong> (GMNP Services and Marketing Pvt Ltd)! 
+                      Thank you for contacting <strong>oveventz.com</strong> (ORBOSIS VIBEZ EVENT & MARKETING PRIVATE LIMITED)! 
                       We're thrilled about your interest and are excited to partner with you. We've created your 
                       personalized account to get you started on this amazing journey with us.
                     </div>
@@ -394,7 +394,7 @@ const sendEmail = async (req, res) => {
                   <!-- Footer -->
                   <div class="footer">
                     <div class="company-info">
-                      <strong>GMNP Services and Marketing Pvt Ltd</strong><br>
+                      <strong>ORBOSIS VIBEZ EVENT & MARKETING PRIVATE LIMITED</strong><br>
                       oveventz.com - Creating Memorable Moments
                     </div>
                     

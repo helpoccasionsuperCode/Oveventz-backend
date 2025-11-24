@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const VendorRegister = require("../models/vendorRegister");
 
 const signToken = (payload) => {
     const secret = process.env.JWT_SECRET;
@@ -262,21 +263,36 @@ module.exports = {
       });
     }
 
-    // Create new user (User model doesn't have 'name' field, only email and password)
+    // Find VendorRegister by email (data already saved from registration form)
+    const vendor = await VendorRegister.findOne({ email: normalizedEmail });
+    if (!vendor) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Vendor registration not found. Please register as vendor first." 
+      });
+    }
+
+    // Create new user with vendor_id linked
     const user = new User({ 
       email: normalizedEmail, 
       password: password.trim(),
-      role: "vendor" // Default role
+      role: "vendor",
+      vendor_id: vendor._id  // Link vendor_id
     });
     await user.save();
 
+    // Update VendorRegister.hasUser flag
+    vendor.hasUser = true;
+    await vendor.save();
+
     res.status(201).json({ 
       success: true,
-      message: "User registered successfully!",
+      message: "User registered and linked to vendor successfully!",
       data: {
         id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        vendor_id: user.vendor_id
       }
     });
   } catch (err) {
@@ -304,36 +320,6 @@ module.exports = {
     });
   }
 },
-
-//   saveData: async (req, res) => {
-//         try {
-//             let { email, password } = req.body || {};
-//             let createUser = await User.create({email,password})
-            
-                       
-//         } catch (error) {
-//             console.error("login error:", error);
-//             return res.status(500).json({ success: false, message: "Internal Server Error" });
-//         }
-//     },
-
-
-
-
-// testData: async (req, res) => {
-//     console.log("hello world");
-//     res.status(200).json({ success: true, message: "Test endpoint working" });
-//             // try {
-               
-//             //     const users = await User.find()
-//             //     return res.status(200).json({ success: true, data: users });
-//             // } catch (error) {
-//             //     console.error("listVendorUsers error:", error);
-//             //     return res.status(500).json({ success: false, message: "Internal Server Error" });
-//             // }
-//         },
-
-
 
 
 };

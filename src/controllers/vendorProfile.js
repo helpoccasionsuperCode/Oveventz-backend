@@ -44,9 +44,18 @@ const getVendorProfile = async (req, res) => {
             vendor: null
         };
 
-        // If vendor data exists, include it
+        // Get vendor data via vendor_id (must be linked)
+        let vendor = null;
+        
         if (user.vendor_id) {
-            const vendor = user.vendor_id;
+            vendor = user.vendor_id;
+            console.log(`✅ Found vendor via vendor_id: ${vendor.businessName}`);
+        } else {
+            console.log(`❌ vendor_id is null for user: ${user.email}. Vendor not linked.`);
+        }
+
+        // If vendor data exists, include it
+        if (vendor) {
             profileData.vendor = {
                 id: vendor._id,
                 userId: vendor.userId,
@@ -74,6 +83,8 @@ const getVendorProfile = async (req, res) => {
                 createdAt: vendor.createdAt,
                 updatedAt: vendor.updatedAt
             };
+        } else {
+            console.log(`⚠️ No vendor data available for user: ${user.email}`);
         }
 
         return res.status(200).json({

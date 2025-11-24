@@ -49,19 +49,76 @@ const SENDER_EMAIL = process.env.SMTP_USER || "password@oveventz.com";
 // ---------- Controller Functions ----------
 const eventplan = async (req, res) => {
   try {
-    const data = await coustomerEventModel.create(req.body);
+    // Ensure status is set to "pending" by default if not provided
+    // Convert priorities object to Map if it's a plain object
+    let prioritiesMap = req.body.priorities;
+    if (prioritiesMap && typeof prioritiesMap === 'object' && !(prioritiesMap instanceof Map)) {
+      const map = new Map();
+      Object.entries(prioritiesMap).forEach(([key, value]) => {
+        map.set(key, value);
+      });
+      prioritiesMap = map;
+    }
+    
+    const eventData = {
+      ...req.body,
+      status: req.body.status || "pending",
+      type: req.body.type || req.body.eventType || "",
+      priorities: prioritiesMap || new Map()
+    };
+    
+    console.log("Creating event with data:", {
+      ...eventData,
+      priorities: eventData.priorities instanceof Map ? Object.fromEntries(eventData.priorities) : eventData.priorities
+    });
+    const data = await coustomerEventModel.create(eventData);
+    console.log("Event created successfully:", data._id);
     res.status(200).json({ success: true, message: "Event added", data });
   } catch (err) {
     console.error("eventplan error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 };
 
 const showAllEvent = async (req, res) => {
   try {
-    const data = await coustomerEventModel.find({});
-    res.status(200).json({ success: true, data });
+    const data = await coustomerEventModel.find({}).sort({ createdAt: -1 });
+    
+    // Convert Mongoose documents to plain objects and handle Map fields
+    const formattedData = data.map(event => {
+      const eventObj = event.toObject();
+      
+      // Convert priorities Map to plain object if it exists
+      if (eventObj.priorities && eventObj.priorities instanceof Map) {
+        eventObj.priorities = Object.fromEntries(eventObj.priorities);
+      } else if (eventObj.priorities && typeof eventObj.priorities === 'object') {
+        // Already an object, keep as is
+        eventObj.priorities = eventObj.priorities;
+      } else {
+        eventObj.priorities = {};
+      }
+      
+      // Ensure specialInstructions is a string
+      if (eventObj.specialInstructions === undefined || eventObj.specialInstructions === null) {
+        eventObj.specialInstructions = "";
+      }
+      
+      return eventObj;
+    });
+    
+    console.log(`📋 Fetched ${formattedData.length} customer events`);
+    console.log("Sample events:", formattedData.slice(0, 3).map(e => ({
+      id: e._id,
+      name: e.name,
+      email: e.email,
+      status: e.status,
+      priorities: e.priorities,
+      specialInstructions: e.specialInstructions ? "Yes" : "No",
+      createdAt: e.createdAt
+    })));
+    res.status(200).json({ success: true, data: formattedData });
   } catch (err) {
+    console.error("showAllEvent error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
